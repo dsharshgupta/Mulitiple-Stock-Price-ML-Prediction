@@ -54,6 +54,7 @@ def predict(var1, var2, var3, var4, model):
     return prediction
 
 def main():
+    st.title("Xgboost Stock Price Predictor for next Day")
     stock_options = {
         'Adani': 'INE002A01018',
         'IRCTC': 'INE335Y01020',
@@ -65,17 +66,17 @@ def main():
 
     selected_stock = st.selectbox('Select Stock', list(stock_options.keys()))
 
-    var1 = st.number_input('Previous Day Open')
-    var2 = st.number_input('Previous Day Low')
-    var3 = st.number_input('Previous Day Close')
-    var4 = st.number_input('Previous Day Volume')
+    var1 = st.number_input('Today Open')
+    var2 = st.number_input('Today Low')
+    var3 = st.number_input('Today Close')
+    var4 = st.number_input('Today Volume')
 
     if st.button('Predict'):
         selected_code = stock_options[selected_stock]
         model = get_model(selected_code)
         with st.spinner('Predicting...'):
             prediction = predict(var1, var2, var3, var4, model)
-        st.write(f'Predicted Price: {prediction}')
+        st.write(f'Next Day Predicted Price: {prediction}')
 
 if __name__ == '__main__':
     main()
