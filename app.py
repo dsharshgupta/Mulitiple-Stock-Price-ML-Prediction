@@ -4,11 +4,14 @@ import requests
 from joblib import load, dump
 import xgboost as xgb
 import sklearn
+import logging
 
+# Set up logging
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 
 def get_model(code):
-    st.write("Fetching historical candle data from the API...")
+    st.info("Fetching historical candle data from the API...")
     from datetime import datetime, timedelta
     end = str(datetime.now().year) + "-" + str(datetime.now().month).zfill(2) + "-" + str(datetime.now().day).zfill(2)
     da = datetime.now() - timedelta(days=365*20)
@@ -24,7 +27,7 @@ def get_model(code):
         st.error(f"Error: {response.status_code} - {response.text}")
         return None
     
-    st.write("Data fetched successfully.")
+    st.info("Data fetched successfully.")
     
     candels = data['data']['candles']
     candels_list = []
@@ -49,16 +52,16 @@ def get_model(code):
     X,y = data_df.drop(columns=['next_day_high']),data_df['next_day_high']
     model = xgb.XGBRegressor()
     model.fit(X,y)
-    st.write("Model trained successfully.")
+    st.info("Model trained successfully.")
     return model
 
 
 def predict(var1, var2, var3, var4, model):
-    st.write("Predicting next day's stock price...")
+    st.info("Predicting next day's stock price...")
     l = ['previous_day_open','previous_day_low','previous_day_close','previous_day_volume']
     s = pd.DataFrame([[var1,var2,var3,var4]],columns=l,index=None)
     prediction = model.predict(s)[0]
-    st.write("Prediction completed.")
+    st.info("Prediction completed.")
     return prediction
 
 
