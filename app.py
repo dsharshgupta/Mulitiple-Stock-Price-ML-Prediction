@@ -41,6 +41,7 @@ def get_model(code):
         ele = {"date":date,"open":open,"high":high,"low":low,"close":close,"volume":volume}
         candels_list.append(ele)
     data_df = pd.DataFrame.from_dict(candels_list)
+    st.info("Model training started")
     data_df['date'] = pd.to_datetime(data_df['date']).dt.date
     data_df['previous_day_open'] = data_df['open'].shift(1)
     data_df['previous_day_low'] = data_df['low'].shift(1)
