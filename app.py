@@ -1,12 +1,14 @@
 import streamlit as st
 import pandas as pd
 import requests
-from joblib import load,dump
+from joblib import load, dump
 import xgboost as xgb
 import sklearn
 
 
+
 def get_model(code):
+    st.write("Fetching historical candle data from the API...")
     from datetime import datetime, timedelta
     end = str(datetime.now().year) + "-" + str(datetime.now().month).zfill(2) + "-" + str(datetime.now().day).zfill(2)
     da = datetime.now() - timedelta(days=365*20)
@@ -19,7 +21,11 @@ def get_model(code):
     if response.status_code == 200:
         data = response.json()
     else:
-        print(f"Error: {response.status_code} - {response.text}")
+        st.error(f"Error: {response.status_code} - {response.text}")
+        return None
+    
+    st.write("Data fetched successfully.")
+    
     candels = data['data']['candles']
     candels_list = []
     for row in candels:
@@ -43,25 +49,28 @@ def get_model(code):
     X,y = data_df.drop(columns=['next_day_high']),data_df['next_day_high']
     model = xgb.XGBRegressor()
     model.fit(X,y)
+    st.write("Model trained successfully.")
     return model
 
 
-
 def predict(var1, var2, var3, var4, model):
+    st.write("Predicting next day's stock price...")
     l = ['previous_day_open','previous_day_low','previous_day_close','previous_day_volume']
     s = pd.DataFrame([[var1,var2,var3,var4]],columns=l,index=None)
     prediction = model.predict(s)[0]
+    st.write("Prediction completed.")
     return prediction
 
+
 def main():
-    st.title("Xgboost Stock Price Predictor for next Day")
+    st.title("Xgboost Stock Price Predictor for Next Day")
     stock_options = {
         'Adani': 'INE002A01018',
         'IRCTC': 'INE335Y01020',
         'Indian Oil': 'INE242A01010',
         'Tata Power': 'INE245A01021',
         'Tata Motors': 'INE155A01022',
-        'SBI':'INE062A01020'
+        'SBI': 'INE062A01020'
     }
 
     selected_stock = st.selectbox('Select Stock', list(stock_options.keys()))
@@ -74,9 +83,11 @@ def main():
     if st.button('Predict'):
         selected_code = stock_options[selected_stock]
         model = get_model(selected_code)
-        with st.spinner('Predicting...'):
-            prediction = predict(var1, var2, var3, var4, model)
-        st.write(f'Next Day Predicted Price: {prediction}')
+        if model is not None:
+            with st.spinner('Predicting...'):
+                prediction = predict(var1, var2, var3, var4, model)
+            st.write(f'Next Day Predicted Price: {prediction}')
+
 
 if __name__ == '__main__':
     main()
