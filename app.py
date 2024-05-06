@@ -9,12 +9,9 @@ import logging
 # Set up logging
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
-# Create a list to store logs
-logs = []
-
 
 def get_model(code):
-    logs.append("Fetching historical candle data from the API...")
+    st.info("Fetching historical candle data from the API...")
     from datetime import datetime, timedelta
     end = str(datetime.now().year) + "-" + str(datetime.now().month).zfill(2) + "-" + str(datetime.now().day).zfill(2)
     da = datetime.now() - timedelta(days=365*20)
@@ -27,10 +24,10 @@ def get_model(code):
     if response.status_code == 200:
         data = response.json()
     else:
-        logs.append(f"Error: {response.status_code} - {response.text}")
+        st.error(f"Error: {response.status_code} - {response.text}")
         return None
     
-    logs.append("Data fetched successfully.")
+    st.info("Data fetched successfully.")
     
     candels = data['data']['candles']
     candels_list = []
@@ -44,7 +41,6 @@ def get_model(code):
         ele = {"date":date,"open":open,"high":high,"low":low,"close":close,"volume":volume}
         candels_list.append(ele)
     data_df = pd.DataFrame.from_dict(candels_list)
-    logs.append("Model training started")
     data_df['date'] = pd.to_datetime(data_df['date']).dt.date
     data_df['previous_day_open'] = data_df['open'].shift(1)
     data_df['previous_day_low'] = data_df['low'].shift(1)
@@ -56,16 +52,16 @@ def get_model(code):
     X,y = data_df.drop(columns=['next_day_high']),data_df['next_day_high']
     model = xgb.XGBRegressor()
     model.fit(X,y)
-    logs.append("Model trained successfully.")
+    st.info("Model trained successfully.")
     return model
 
 
 def predict(var1, var2, var3, var4, model):
-    logs.append("Predicting next day's stock price...")
+    st.info("Predicting next day's stock price...")
     l = ['previous_day_open','previous_day_low','previous_day_close','previous_day_volume']
     s = pd.DataFrame([[var1,var2,var3,var4]],columns=l,index=None)
     prediction = model.predict(s)[0]
-    logs.append("Prediction completed.")
+    st.info("Prediction completed.")
     return prediction
 
 
@@ -94,11 +90,6 @@ def main():
             with st.spinner('Predicting...'):
                 prediction = predict(var1, var2, var3, var4, model)
             st.write(f'Next Day Predicted Price: {prediction}')
-
-    if st.sidebar.button('View Logs'):
-        st.sidebar.subheader('Logs')
-        for log in logs:
-            st.sidebar.write(log)
 
 
 if __name__ == '__main__':
