@@ -105,7 +105,7 @@ def main():
         if model is not None:
             with st.spinner('Predicting...'):
                 prediction = predict(var1, var2, var3, var4, model)
-            st.write(f'Next Day Predicted Price: {prediction}',color=)
+            st.write(f'Next Day Predicted Price: {prediction}')
 
 
 if __name__ == '__main__':
