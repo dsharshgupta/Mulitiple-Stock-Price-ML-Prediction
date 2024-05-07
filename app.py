@@ -93,6 +93,8 @@ def main():
     var3 = st.number_input('Today Close')
     var4 = st.number_input('Today Volume')
 
+    col1,col2 = st.columns(2)
+
     if col1.button('Train'):
         with st.spinner('Training...'):
             train_model(stock_options[selected_stock])
