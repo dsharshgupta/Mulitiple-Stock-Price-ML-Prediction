@@ -54,7 +54,7 @@ def train_model(code):
     model = xgb.XGBRegressor()
     model.fit(X,y)
     st.info("Model trained successfully.")
-    dump(model,f"{model}.joblib")
+    dump(model,f"{code}.joblib")
     return 
     
 def get_model(code):
