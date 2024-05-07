@@ -95,17 +95,19 @@ def main():
 
     col1,col2 = st.columns([1,1])
 
-    if col1.button('Train'):
-        with st.spinner('Training...'):
-            train_model(stock_options[selected_stock])
+    with col1:
+        if st.button('Train'):
+            with st.spinner('Training...'):
+                train_model(stock_options[selected_stock])
 
-    if col1.button('Predict'):
-        selected_code = stock_options[selected_stock]
-        model = get_model(selected_code)
-        if model is not None:
-            with st.spinner('Predicting...'):
-                prediction = predict(var1, var2, var3, var4, model)
-            st.write(f'Next Day Predicted Price: {prediction}')
+    with col2:
+        if st.button('Predict'):
+            selected_code = stock_options[selected_stock]
+            model = get_model(selected_code)
+            if model is not None:
+                with st.spinner('Predicting...'):
+                    prediction = predict(var1, var2, var3, var4, model)
+                st.write(f'Next Day Predicted Price: {prediction}')
 
 
 if __name__ == '__main__':
