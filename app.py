@@ -93,7 +93,7 @@ def main():
     var3 = st.number_input('Today Close')
     var4 = st.number_input('Today Volume')
 
-    col1,col2 = st.columns(2)
+    col1,col2 = st.columns([1,1])
 
     if col1.button('Train'):
         with st.spinner('Training...'):
@@ -105,7 +105,7 @@ def main():
         if model is not None:
             with st.spinner('Predicting...'):
                 prediction = predict(var1, var2, var3, var4, model)
-            st.write(f'Next Day Predicted Price: {prediction}')
+            st.write(f'Next Day Predicted Price: {prediction}',color=)
 
 
 if __name__ == '__main__':
