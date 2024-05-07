@@ -10,7 +10,7 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 
-def get_model(code):
+def train_model(code):
     st.info("Fetching historical candle data from the API...")
     from datetime import datetime, timedelta
     end = str(datetime.now().year) + "-" + str(datetime.now().month).zfill(2) + "-" + str(datetime.now().day).zfill(2)
@@ -54,6 +54,11 @@ def get_model(code):
     model = xgb.XGBRegressor()
     model.fit(X,y)
     st.info("Model trained successfully.")
+    dump(model,f"{model}.joblib")
+    return 
+    
+def get_model(code):
+    model = load(f"{code}.joblib")
     return model
 
 
@@ -68,6 +73,10 @@ def predict(var1, var2, var3, var4, model):
 
 def main():
     st.title("Xgboost Stock Price Predictor for Next Day")
+
+    st.write("Train button is to train the models on new data")
+    st.write("Predict will predict on already trained model.")
+    
     stock_options = {
         'Adani': 'INE002A01018',
         'IRCTC': 'INE335Y01020',
@@ -83,6 +92,10 @@ def main():
     var2 = st.number_input('Today Low')
     var3 = st.number_input('Today Close')
     var4 = st.number_input('Today Volume')
+
+    if st.button('Train'):
+        with st.spinner('Training...'):
+            train_model(stock_options[selected_stock])
 
     if st.button('Predict'):
         selected_code = stock_options[selected_stock]
