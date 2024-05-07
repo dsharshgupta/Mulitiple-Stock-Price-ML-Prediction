@@ -93,11 +93,11 @@ def main():
     var3 = st.number_input('Today Close')
     var4 = st.number_input('Today Volume')
 
-    if st.button('Train'):
+    if col1.button('Train'):
         with st.spinner('Training...'):
             train_model(stock_options[selected_stock])
 
-    if st.button('Predict'):
+    if col1.button('Predict'):
         selected_code = stock_options[selected_stock]
         model = get_model(selected_code)
         if model is not None:
